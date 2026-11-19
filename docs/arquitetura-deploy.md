@@ -75,8 +75,3 @@ Passos planejados:
 - [ ] Criar o pipeline do back-end (testes, build e deploy).
 - [ ] Corrigir os erros de TypeScript do `App.tsx` e ativar o `typecheck` no CI.
 - [ ] Decidir se a branch `develop` será usada, ou removê-la dos gatilhos do CI.
-
-## Histórico de decisões
-
-- 17/11/2026: back-end em Python, confirmado pelo Rafael Costa.
-- 18/11/2026: front-end na Vercel, decidido com o Rafael Costa. Hospedagem do back-end e do banco ainda em aberto.
