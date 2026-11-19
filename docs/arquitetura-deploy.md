@@ -22,6 +22,10 @@ Fluxo de uso:
 
 Cada ambiente deve ter seu próprio banco e sua própria API. Staging nunca usa dados de produção.
 
+## Decisão sobre Environments do GitHub
+
+Adiados. O deploy do front-end é feito pela Vercel (Production = staging e Preview = dev, por Pull Request). Os Environments do GitHub (Settings > Environments) serão criados quando o pipeline de deploy do back-end existir.
+
 ## Fluxo de branches
 
 1. Criar uma branch `feature/<nome>` a partir da `main`.
@@ -69,6 +73,7 @@ Passos planejados:
 
 ## Pendências
 
+- [ ] Criar os Environments do GitHub (dev, staging, prod) junto com o deploy do back-end.
 - [ ] Definir a hospedagem do back-end Python.
 - [ ] Definir a hospedagem do PostgreSQL.
 - [ ] Definir como e quando a produção é publicada.
