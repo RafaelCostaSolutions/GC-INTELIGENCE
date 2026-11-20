@@ -15,7 +15,28 @@ Dashboard inteligente de gestão clínica e laboratorial com:
 - Lucide React (ícones)
 - Recharts (gráficos)
 
-## Como rodar
+## Setup rápido (importante)
+
+O arquivo principal `App.tsx` (~1.1 MB) e as imagens ainda estão no arquivo `Gottcured+Home+Limpa.tar.gz` (mantido temporariamente).
+
+Extraia-os assim:
+
+```bash
+# Na raiz do repositório
+tar -xzf Gottcured+Home+Limpa.tar.gz
+
+# Mova para a estrutura correta
+mkdir -p src/assets
+mv App.tsx src/
+mv assets/* src/assets/
+mv index.css src/   # se quiser sobrescrever (já tem versão organizada)
+
+# Corrija o import do logo (se ainda tiver o caminho antigo)
+# Abra src/App.tsx e troque a linha do logoUrl para:
+# import logoUrl from "./assets/55d9576ebcfb89df-gottcured_logo_transparente.png";
+```
+
+Depois:
 
 ```bash
 npm install
@@ -31,16 +52,26 @@ npm run build
 npm run preview
 ```
 
-## Estrutura
+## Estrutura final esperada
 
 ```
-src/
-  App.tsx          # Aplicação principal (dashboard completo)
-  index.css        # Estilos + Tailwind + tema
-  main.tsx         # Entry point
-  assets/          # Logo e imagens
+.
+├── index.html
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+├── README.md
+└── src/
+    ├── main.tsx
+    ├── App.tsx          # dashboard completo
+    ├── index.css
+    └── assets/
+        ├── 55d9576ebcfb89df-gottcured_logo_transparente.png
+        └── 7a764c67a672826f-Captura_de_tela_2026-11-11_121259.png
 ```
 
 ---
 
-Projeto organizado a partir do dump original em `Gottcured+Home+Limpa.tar.gz`.
+Repositório organizado a partir do dump original. Depois de extrair e testar, você pode remover o `.tar.gz`.
