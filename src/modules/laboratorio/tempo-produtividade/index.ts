@@ -1,0 +1,1 @@
+export { TempoProdutividadeModule } from "./TempoProdutividadeModule";

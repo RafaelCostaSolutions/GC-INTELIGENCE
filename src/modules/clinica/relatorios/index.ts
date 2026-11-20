@@ -1,0 +1,1 @@
+export { RelatoriosVisualizacaoModule } from "./RelatoriosVisualizacaoModule";

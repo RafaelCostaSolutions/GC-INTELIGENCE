@@ -1,0 +1,1 @@
+export { ControleQualidadeModule } from "./ControleQualidadeModule";

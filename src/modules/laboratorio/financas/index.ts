@@ -1,0 +1,1 @@
+export { FinancasLaboratorioModule } from "./FinancasLaboratorioModule";

@@ -1,0 +1,1 @@
+export { CatalogoExamesModule } from "./CatalogoExamesModule";

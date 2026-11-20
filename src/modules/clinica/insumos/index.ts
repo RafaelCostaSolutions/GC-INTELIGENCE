@@ -1,0 +1,1 @@
+export { InsumosClinicaModule } from "./InsumosClinicaModule";

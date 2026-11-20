@@ -1,0 +1,1 @@
+export { PrescricaoModule } from "./PrescricaoModule";
