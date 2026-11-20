@@ -14,6 +14,7 @@ Dashboard inteligente de gestão clínica e laboratorial com:
 - Tailwind CSS
 - Lucide React (ícones)
 - Recharts (gráficos)
+- Vercel (deploy)
 
 ## Setup rápido (importante)
 
@@ -53,31 +54,56 @@ Abra [http://localhost:5173](http://localhost:5173).
 | `npm run preview`  | Preview do build             |
 | `npm run typecheck`| Apenas verificação de tipos  |
 
-## CI/CD (GitHub Actions)
+## CI/CD
 
-Workflow em `.github/workflows/ci.yml`:
+### GitHub Actions (Build)
 
-- Dispara em **push** e **pull request** para `main`
-- Instala dependências com cache
-- Extrai automaticamente o `App.tsx` e assets do `.tar.gz` (enquanto ainda não estiverem commitados)
-- Roda **typecheck** (`tsc --noEmit`)
-- Roda **build** (`vite build`)
-- Publica o artefato `dist` por 7 dias
+- `.github/workflows/ci.yml` → typecheck + build em todo push/PR para `main`
+- Acompanhe: https://github.com/RafaelCostaSolutions/GC-INTELIGENCE/actions
 
-Você pode acompanhar as runs em:
-https://github.com/RafaelCostaSolutions/GC-INTELIGENCE/actions
+### Vercel (Deploy)
 
-### Próximos passos (opcional)
+Já está preparado para Vercel:
 
-- Deploy automático para **GitHub Pages** ou **Vercel/Netlify**
-- Adicionar lint (ESLint) e testes
-- Remover o `.tar.gz` depois de commitar `src/App.tsx` + assets
+1. **`vercel.json`** — configuração SPA (Vite + rewrites)
+2. **`.github/workflows/deploy.yml`** — deploy automático via Actions (opcional)
 
-## Estrutura final esperada
+#### Forma recomendada (mais simples)
+
+1. Acesse [vercel.com](https://vercel.com) e faça login com GitHub
+2. Clique em **Add New Project** → importe este repositório
+3. Framework Preset: **Vite** (ou deixe o `vercel.json` detectar)
+4. Root Directory: `./`
+5. Clique em **Deploy**
+
+A partir daí todo push na `main` gera um deploy automático no Vercel.
+
+#### Forma avançada (via GitHub Actions)
+
+Se preferir controlar o deploy pelo Actions:
+
+1. No Vercel → Project Settings → General → copie:
+   - **Project ID**
+   - **Org / Team ID**
+2. Crie um token em [vercel.com/account/tokens](https://vercel.com/account/tokens)
+3. No GitHub do repositório → **Settings → Secrets and variables → Actions** adicione:
+
+| Secret             | Valor              |
+|--------------------|--------------------|
+| `VERCEL_TOKEN`     | Token gerado       |
+| `VERCEL_ORG_ID`    | ID da organização  |
+| `VERCEL_PROJECT_ID`| ID do projeto     |
+
+Depois disso o workflow `Deploy to Vercel` passa a publicar automaticamente.
+
+## Estrutura
 
 ```
 .
-├── .github/workflows/ci.yml
+├── .github/workflows/
+│   ├── ci.yml          # Build + typecheck
+│   └── deploy.yml      # Deploy Vercel (opcional)
+├── vercel.json         # Configuração Vercel
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -90,5 +116,4 @@ https://github.com/RafaelCostaSolutions/GC-INTELIGENCE/actions
     ├── App.tsx
     ├── index.css
     └── assets/
-        └── ...
 ```
