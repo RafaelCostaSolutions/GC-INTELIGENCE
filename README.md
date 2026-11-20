@@ -29,7 +29,6 @@ tar -xzf Gottcured+Home+Limpa.tar.gz
 mkdir -p src/assets
 mv App.tsx src/
 mv assets/* src/assets/
-mv index.css src/   # se quiser sobrescrever (já tem versão organizada)
 
 # Corrija o import do logo (se ainda tiver o caminho antigo)
 # Abra src/App.tsx e troque a linha do logoUrl para:
@@ -45,17 +44,40 @@ npm run dev
 
 Abra [http://localhost:5173](http://localhost:5173).
 
-## Build
+## Scripts
 
-```bash
-npm run build
-npm run preview
-```
+| Comando            | Descrição                    |
+|--------------------|------------------------------|
+| `npm run dev`      | Servidor de desenvolvimento  |
+| `npm run build`    | Typecheck + build de produção|
+| `npm run preview`  | Preview do build             |
+| `npm run typecheck`| Apenas verificação de tipos  |
+
+## CI/CD (GitHub Actions)
+
+Workflow em `.github/workflows/ci.yml`:
+
+- Dispara em **push** e **pull request** para `main`
+- Instala dependências com cache
+- Extrai automaticamente o `App.tsx` e assets do `.tar.gz` (enquanto ainda não estiverem commitados)
+- Roda **typecheck** (`tsc --noEmit`)
+- Roda **build** (`vite build`)
+- Publica o artefato `dist` por 7 dias
+
+Você pode acompanhar as runs em:
+https://github.com/RafaelCostaSolutions/GC-INTELIGENCE/actions
+
+### Próximos passos (opcional)
+
+- Deploy automático para **GitHub Pages** ou **Vercel/Netlify**
+- Adicionar lint (ESLint) e testes
+- Remover o `.tar.gz` depois de commitar `src/App.tsx` + assets
 
 ## Estrutura final esperada
 
 ```
 .
+├── .github/workflows/ci.yml
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -65,13 +87,8 @@ npm run preview
 ├── README.md
 └── src/
     ├── main.tsx
-    ├── App.tsx          # dashboard completo
+    ├── App.tsx
     ├── index.css
     └── assets/
-        ├── 55d9576ebcfb89df-gottcured_logo_transparente.png
-        └── 7a764c67a672826f-Captura_de_tela_2026-11-11_121259.png
+        └── ...
 ```
-
----
-
-Repositório organizado a partir do dump original. Depois de extrair e testar, você pode remover o `.tar.gz`.
