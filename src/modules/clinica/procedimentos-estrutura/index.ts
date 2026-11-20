@@ -1,0 +1,1 @@
+export { ProcedimentosEstruturaModule } from "./ProcedimentosEstruturaModule";

@@ -1,0 +1,1 @@
+export { RelatoriosLabModule } from "./RelatoriosLabModule";

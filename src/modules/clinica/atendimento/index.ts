@@ -1,0 +1,1 @@
+export { AtendimentoModule } from "./AtendimentoModule";

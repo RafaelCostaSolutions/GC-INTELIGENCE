@@ -1,0 +1,1 @@
+export { EquipeProdutividadeModule } from "./EquipeProdutividadeModule";

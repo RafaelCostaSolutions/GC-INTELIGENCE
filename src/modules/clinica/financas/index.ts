@@ -1,0 +1,1 @@
+export { FinancasClinicaModule } from "./FinancasClinicaModule";

@@ -1,0 +1,1 @@
+export { ColetaAmostrasModule } from "./ColetaAmostrasModule";

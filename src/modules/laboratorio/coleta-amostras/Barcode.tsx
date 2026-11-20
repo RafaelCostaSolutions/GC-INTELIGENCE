@@ -1,0 +1,2 @@
+// Setor Laboratório › Coleta e Amostras
+export function Barcode({ code }: { code: string }) { const bars = code.split("").map((ch, i) => ({ w: 1 + ((ch.charCodeAt(0) + i) % 4), gap: 1 + (i % 2) })); return <div className="flex h-10 items-end gap-[2px]" aria-label={`Código de barras ${code}`}>{bars.map((b, i) => <span key={i} className="inline-block bg-[var(--ink)]" style={{ width: `${b.w}px`, height: `${18 + ((i * 7) % 14)}px`, marginRight: `${b.gap}px` }} />)}</div>; }

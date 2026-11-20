@@ -1,0 +1,1 @@
+export { PedidoAgendamentoModule } from "./PedidoAgendamentoModule";

@@ -1,0 +1,1 @@
+export function ChartCard({ title, children, right }: any) { return <div className="soft p-4"><div className="mb-3 flex items-center justify-between gap-2"><h3 className="text-sm font-bold">{title}</h3>{right}</div>{children}</div>; }
