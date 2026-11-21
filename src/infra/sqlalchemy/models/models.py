@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint, func, true
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint, false, func, true
 
 from src.infra.sqlalchemy.config.database import Base
 
@@ -41,13 +41,8 @@ class RefreshToken(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     token_hash = Column(String(64), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False)
-    revoked = Column(Boolean, nullable=False, default=False, server_default=sa_false() if False else false_default())
+    revoked = Column(Boolean, nullable=False, default=False, server_default=false())
     created_at = Column(DateTime, nullable=False, server_default=func.now())
-
-
-def false_default():
-    from sqlalchemy import false
-    return false()
 
 
 class PasswordResetToken(Base):
@@ -59,7 +54,7 @@ class PasswordResetToken(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     token_hash = Column(String(64), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False)
-    used = Column(Boolean, nullable=False, default=False, server_default=false_default())
+    used = Column(Boolean, nullable=False, default=False, server_default=false())
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
 
@@ -71,12 +66,12 @@ class Professional(Base):
 
     id = Column(Integer, primary_key=True)
     hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # set when they also log in
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     name = Column(String(150), nullable=False)
-    kind = Column(String(30), nullable=False)            # medico, enfermeiro, tecnico_lab...
-    council = Column(String(10), nullable=True)          # CRM, COREN, CRBM...
-    registry_number = Column(String(20), nullable=True)  # number in the council
-    registry_state = Column(String(2), nullable=True)    # state (UF) of the registry
+    kind = Column(String(30), nullable=False)
+    council = Column(String(10), nullable=True)
+    registry_number = Column(String(20), nullable=True)
+    registry_state = Column(String(2), nullable=True)
     specialty = Column(String(100), nullable=True)
     phone = Column(String(20), nullable=True)
     email = Column(String(150), nullable=True)
@@ -99,9 +94,9 @@ class Patient(Base):
     phone = Column(String(20), nullable=True)
     email = Column(String(150), nullable=True)
     address = Column(String(255), nullable=True)
-    insurance = Column(String(100), nullable=True)       # health plan (or SUS)
-    insurance_card = Column(String(50), nullable=True)   # plan card / SUS card number
-    guardian_name = Column(String(150), nullable=True)   # legal guardian
+    insurance = Column(String(100), nullable=True)
+    insurance_card = Column(String(50), nullable=True)
+    guardian_name = Column(String(150), nullable=True)
     guardian_phone = Column(String(20), nullable=True)
     active = Column(Boolean, nullable=False, default=True, server_default=true())
     created_at = Column(DateTime, nullable=False, server_default=func.now())
