@@ -68,7 +68,6 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=150)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
-    # admin | gestor | medico | enfermeiro | recepcionista | tecnico_lab
     role: str = Field(default="gestor", max_length=30)
 
 
@@ -103,7 +102,7 @@ class ResetPasswordRequest(BaseModel):
     new_password: str = Field(min_length=8, max_length=128)
 
 
-# ---------- Finance & Laudo (GC-4 demo resources) ----------
+# ---------- Finance & Laudo text sign (GC-4) ----------
 
 class FinanceSummary(BaseModel):
     hospital_id: int
@@ -122,4 +121,34 @@ class LaudoSignResponse(BaseModel):
     signed_by: str
     role: str
     conclusion: str
+    message: str
+
+
+# ---------- Upload + digital signature (base) ----------
+
+class LaudoFileOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    hospital_id: int
+    uploaded_by: int
+    patient_id: Optional[int] = None
+    exam_id: Optional[str] = None
+    original_filename: str
+    content_type: Optional[str] = None
+    size_bytes: int
+    file_hash: str
+    signature: Optional[str] = None
+    signed_by: Optional[int] = None
+    signed_at: Optional[datetime] = None
+    notes: Optional[str] = None
+    created_at: Optional[datetime] = None
+
+
+class LaudoVerifyResponse(BaseModel):
+    id: int
+    file_hash: str
+    hash_matches_file: bool
+    is_signed: bool
+    signature_valid: Optional[bool] = None
     message: str
