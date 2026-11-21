@@ -15,9 +15,9 @@ from src.infra.sqlalchemy.repositories.user import UserRepository
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def get_current_user_optional(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-    db: Session = Depends(get_db),
+def _user_from_credentials(
+    credentials: Optional[HTTPAuthorizationCredentials],
+    db: Session,
 ) -> Optional[User]:
     if credentials is None or not credentials.credentials:
         return None
@@ -34,15 +34,21 @@ def get_current_user_optional(
     return user
 
 
+def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> Optional[User]:
+    return _user_from_credentials(credentials, db)
+
+
 def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ) -> User:
-    user = get_current_user_optional(credentials, db)
+    if credentials is None or not credentials.credentials:
+        raise ApiError(401, "UNAUTHORIZED", "Token de acesso ausente")
+    user = _user_from_credentials(credentials, db)
     if user is None:
-        # Distinguish missing vs invalid for clearer messages
-        if credentials is None or not credentials.credentials:
-            raise ApiError(401, "UNAUTHORIZED", "Token de acesso ausente")
         raise ApiError(401, "UNAUTHORIZED", "Token de acesso inválido ou expirado")
     return user
 
