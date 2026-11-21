@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint, false, func, true
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, false, func, true
 
 from src.infra.sqlalchemy.config.database import Base
 
@@ -55,6 +55,34 @@ class PasswordResetToken(Base):
     token_hash = Column(String(64), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False)
     used = Column(Boolean, nullable=False, default=False, server_default=false())
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+
+class LaudoFile(Base):
+    """Uploaded lab report / laudo with integrity hash and optional digital signature."""
+
+    __tablename__ = "laudo_files"
+
+    id = Column(Integer, primary_key=True)
+    hospital_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False, index=True)
+    uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=True)
+    exam_id = Column(String(50), nullable=True)
+
+    original_filename = Column(String(255), nullable=False)
+    stored_path = Column(String(500), nullable=False)
+    content_type = Column(String(100), nullable=True)
+    size_bytes = Column(Integer, nullable=False)
+
+    # SHA-256 of the file bytes (integrity)
+    file_hash = Column(String(64), nullable=False, index=True)
+
+    # Basic digital signature: HMAC-SHA256(file_hash, signing_key) bound to signer
+    signature = Column(String(128), nullable=True)
+    signed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    signed_at = Column(DateTime, nullable=True)
+
+    notes = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
 
