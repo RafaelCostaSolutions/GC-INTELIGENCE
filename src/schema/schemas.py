@@ -68,6 +68,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=150)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    # admin | gestor | medico | enfermeiro | recepcionista | tecnico_lab
     role: str = Field(default="gestor", max_length=30)
 
 
@@ -80,7 +81,7 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
-    expires_in: int  # access token lifetime in seconds
+    expires_in: int
     user: UserOut
 
 
@@ -94,10 +95,31 @@ class ForgotPasswordRequest(BaseModel):
 
 class ForgotPasswordResponse(BaseModel):
     message: str
-    # Only present when AUTH_DEBUG=true (local development)
     reset_token: Optional[str] = None
 
 
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str = Field(min_length=8, max_length=128)
+
+
+# ---------- Finance & Laudo (GC-4 demo resources) ----------
+
+class FinanceSummary(BaseModel):
+    hospital_id: int
+    receita_mes: float
+    despesa_mes: float
+    margem: float
+
+
+class LaudoSignRequest(BaseModel):
+    exam_id: str = Field(min_length=1, max_length=50)
+    conclusion: str = Field(min_length=1, max_length=2000)
+
+
+class LaudoSignResponse(BaseModel):
+    exam_id: str
+    signed_by: str
+    role: str
+    conclusion: str
+    message: str
