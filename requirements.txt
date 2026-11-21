@@ -4,6 +4,11 @@ sqlalchemy
 alembic
 psycopg[binary]
 pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt<4.1
+python-multipart
+email-validator
 # tests
 pytest
 httpx
