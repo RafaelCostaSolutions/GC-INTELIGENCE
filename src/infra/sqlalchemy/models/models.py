@@ -17,7 +17,7 @@ class Hospital(Base):
 
 
 class User(Base):
-    """Someone who logs in. Login and passwords belong to GC-3."""
+    """Someone who logs in (GC-3)."""
 
     __tablename__ = "users"
 
@@ -29,6 +29,37 @@ class User(Base):
     # gestor, medico, enfermeiro, recepcionista, tecnico_lab, admin (GC-4)
     role = Column(String(30), nullable=False)
     active = Column(Boolean, nullable=False, default=True, server_default=true())
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+
+class RefreshToken(Base):
+    """Opaque refresh tokens stored hashed. Rotated on every use (GC-3)."""
+
+    __tablename__ = "refresh_tokens"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    token_hash = Column(String(64), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    revoked = Column(Boolean, nullable=False, default=False, server_default=sa_false() if False else false_default())
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+
+def false_default():
+    from sqlalchemy import false
+    return false()
+
+
+class PasswordResetToken(Base):
+    """One-time tokens for password recovery (GC-3)."""
+
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    token_hash = Column(String(64), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, nullable=False, default=False, server_default=false_default())
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
 
