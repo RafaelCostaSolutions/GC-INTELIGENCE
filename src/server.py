@@ -1,10 +1,10 @@
-from typing import List, Optional
+from typing import List
 
-from fastapi import Depends, FastAPI, Header
+from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 
 from src.auth import service as auth_service
-from src.auth.deps import get_current_user
+from src.auth.deps import current_hospital, get_current_user
 from src.errors import not_found, register_error_handlers
 from src.infra.sqlalchemy.config.database import get_db
 from src.infra.sqlalchemy.models.models import User
@@ -29,48 +29,6 @@ from src.schema.schemas import (
 app = FastAPI(title="GC Intelligence API")
 setup_logging(app)
 register_error_handlers(app)
-
-
-def current_hospital(
-    x_hospital_id: Optional[int] = Header(None, description="Legacy header; prefer JWT"),
-    user: Optional[User] = Depends(get_current_user_optional),
-    db: Session = Depends(get_db),
-) -> int:
-    """Hospital of the request (GC-5).
-
-    Prefer hospital_id from the JWT (GC-3). Fall back to X-Hospital-Id for
-    backwards compatibility while the front migrates.
-    """
-    hospital_id = user.hospital_id if user is not None else x_hospital_id
-    if hospital_id is None:
-        from src.errors import ApiError
-        raise ApiError(401, "UNAUTHORIZED", "Autenticação necessária")
-    if HospitalRepository(db).get(hospital_id) is None:
-        raise not_found("Hospital")
-    return hospital_id
-
-
-def get_current_user_optional(
-    credentials=Depends(__import__("src.auth.deps", fromlist=["bearer_scheme"]).bearer_scheme),
-    db: Session = Depends(get_db),
-) -> Optional[User]:
-    """Same as get_current_user but returns None instead of 401 when missing."""
-    if credentials is None or not credentials.credentials:
-        return None
-    from src.auth.security import decode_access_token
-    from src.infra.sqlalchemy.repositories.user import UserRepository
-
-    payload = decode_access_token(credentials.credentials)
-    if payload is None:
-        return None
-    try:
-        user_id = int(payload["sub"])
-    except (KeyError, ValueError, TypeError):
-        return None
-    user = UserRepository(db).get_by_id(user_id)
-    if user is None or not user.active:
-        return None
-    return user
 
 
 # ---------- AUTH (GC-3) ----------
