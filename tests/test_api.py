@@ -67,11 +67,11 @@ def test_tables_and_hospital_isolation():
     assert len(client.get("/professionals", headers=HA).json()) == 1
 
 
-def test_hospital_must_exist():
-    # Unknown hospital via legacy header still rejected
-    r = client.get("/patients", headers={"X-Hospital-Id": "999"})
-    # Without JWT and with unknown hospital → 404 hospital or 401 depending on path
-    assert r.status_code in (401, 404)
+def test_requires_auth_for_tenant_routes():
+    # Sem JWT não há tenant
+    r = client.get("/patients", headers={"X-Hospital-Id": "1"})
+    assert r.status_code == 401
+    assert r.json()["code"] == "UNAUTHORIZED"
 
 
 def test_errors_use_standard_format():
