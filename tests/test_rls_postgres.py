@@ -55,6 +55,13 @@ def test_postgres_rls_blocks_cross_tenant_reads_and_writes():
             )
             conn.commit()
 
+            # A tenant must not be able to insert a row for another hospital.
+            with pytest.raises(Exception):
+                conn.execute(
+                    text(f'INSERT INTO "{table}" (id, hospital_id, value) VALUES (3, 202, \'tentativa\')')
+                )
+            conn.rollback()
+
             conn.execute(
                 text("SELECT set_config('app.current_hospital_id', '101', false)")
             )
