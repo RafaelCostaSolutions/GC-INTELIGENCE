@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from src.auth.security import decode_access_token
 from src.errors import ApiError, not_found
-from src.infra.sqlalchemy.config.database import get_db
+from src.infra.sqlalchemy.config.database import get_db, set_tenant_context
 from src.infra.sqlalchemy.models.models import User
 from src.infra.sqlalchemy.repositories.hospital import HospitalRepository
 from src.infra.sqlalchemy.repositories.user import UserRepository
@@ -63,15 +63,10 @@ def current_hospital(
         description="Ignored. Tenant always comes from the JWT.",
     ),
 ) -> int:
-    """Tenant of the request (GC-5).
-
-    Always taken from the authenticated user's hospital_id.
-    A forged X-Hospital-Id header is ignored (and must not change the scope).
-    """
+    """Resolve the tenant from the authenticated user and activate DB RLS."""
     hospital_id = user.hospital_id
 
     if x_hospital_id is not None and x_hospital_id != hospital_id:
-        # Do not leak whether the other hospital exists — just enforce tenant.
         raise ApiError(
             403,
             "FORBIDDEN",
@@ -81,4 +76,6 @@ def current_hospital(
     if HospitalRepository(db).get(hospital_id) is None:
         raise not_found("Hospital")
 
+    # PostgreSQL policies enforce this scope inside the database itself.
+    set_tenant_context(db, hospital_id)
     return hospital_id
