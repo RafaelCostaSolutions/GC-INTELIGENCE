@@ -63,3 +63,37 @@ cp .env.example .env
 alembic upgrade head
 uvicorn src.server:app --reload
 ```
+
+
+## Logs, monitoramento e erros padronizados (GC-6)
+
+### Contrato de erro
+
+Toda resposta de erro tratada pela API utiliza o formato:
+
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Dados inválidos: body.email"
+}
+```
+
+O campo `code` é estável para tratamento pelo front-end. O campo `message` é seguro para exibição. Detalhes internos, SQL, stack traces e mensagens arbitrárias de exceções não são enviados ao cliente.
+
+### Observabilidade
+
+- Cada requisição recebe um `X-Request-ID` (um valor de entrada válido é preservado; valores inválidos são substituídos).
+- O mesmo identificador é devolvido no cabeçalho da resposta, inclusive em erros tratados.
+- Logs são emitidos em JSON com timestamp UTC, nível, logger, método, caminho, status HTTP, duração e request ID.
+- Exceções inesperadas incluem stack trace apenas no log do servidor.
+- Corpos, query strings, cabeçalhos de autenticação e dados de pacientes não são registrados pelo middleware.
+
+### Execução dos testes
+
+```bash
+python -m pytest tests/test_gc6_observability.py -v
+```
+
+Os testes cobrem contrato de erro, validação, HTTP 403 sem exposição de detalhes, falha inesperada 500, correlação por request ID e formato JSON dos logs.
+
+> Os logs estruturados são enviados para stdout/stderr. A retenção, alertas e dashboards dependem da plataforma de hospedagem ou de um coletor (por exemplo, serviço de logs centralizado) configurado no ambiente de implantação.
