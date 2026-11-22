@@ -1,4 +1,4 @@
-"""FastAPI dependencies for authentication."""
+"""FastAPI dependencies for authentication and multi-tenant scope (GC-5)."""
 from typing import Optional
 
 from fastapi import Depends, Header
@@ -54,18 +54,31 @@ def get_current_user(
 
 
 def current_hospital(
-    x_hospital_id: Optional[int] = Header(None, description="Legacy header; prefer JWT"),
-    user: Optional[User] = Depends(get_current_user_optional),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    # Kept only to detect and reject client attempts to forge tenant
+    x_hospital_id: Optional[int] = Header(
+        None,
+        alias="X-Hospital-Id",
+        description="Ignored. Tenant always comes from the JWT.",
+    ),
 ) -> int:
-    """Hospital of the request (GC-5).
+    """Tenant of the request (GC-5).
 
-    Prefer hospital_id from the JWT (GC-3). Fall back to X-Hospital-Id while
-    the front migrates.
+    Always taken from the authenticated user's hospital_id.
+    A forged X-Hospital-Id header is ignored (and must not change the scope).
     """
-    hospital_id = user.hospital_id if user is not None else x_hospital_id
-    if hospital_id is None:
-        raise ApiError(401, "UNAUTHORIZED", "Autenticação necessária")
+    hospital_id = user.hospital_id
+
+    if x_hospital_id is not None and x_hospital_id != hospital_id:
+        # Do not leak whether the other hospital exists — just enforce tenant.
+        raise ApiError(
+            403,
+            "FORBIDDEN",
+            "Não é permitido acessar dados de outro hospital",
+        )
+
     if HospitalRepository(db).get(hospital_id) is None:
         raise not_found("Hospital")
+
     return hospital_id
