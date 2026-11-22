@@ -8,6 +8,7 @@ import uuid
 
 import pytest
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import DBAPIError
 
 
 @pytest.mark.skipif(
@@ -55,8 +56,11 @@ def test_postgres_rls_blocks_cross_tenant_reads_and_writes():
             )
             conn.commit()
 
-            # A tenant must not be able to insert a row for another hospital.
-            with pytest.raises(Exception):
+            # Tenant 101 must not be able to insert a row for hospital 202.
+            conn.execute(
+                text("SELECT set_config('app.current_hospital_id', '101', false)")
+            )
+            with pytest.raises(DBAPIError):
                 conn.execute(
                     text(f'INSERT INTO "{table}" (id, hospital_id, value) VALUES (3, 202, \'tentativa\')')
                 )
