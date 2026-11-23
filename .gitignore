@@ -36,3 +36,12 @@ lerna-debug.log*
 # Misc
 .clippy
 *.tar.gz
+
+# Backend (Python)
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Testes
+.pytest_cache/
