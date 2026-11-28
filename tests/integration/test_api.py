@@ -2,10 +2,8 @@ from fastapi.testclient import TestClient
 
 from src.server import app
 
-client = TestClient(app)
 
-
-def test_tables_and_hospital_isolation():
+def test_tables_and_hospital_isolation(client):
     a = client.post('/hospitals', json={'name': 'Hospital A'}).json()['id']
     b = client.post('/hospitals', json={'name': 'Hospital B'}).json()['id']
     HA, HB = {'X-Hospital-Id': str(a)}, {'X-Hospital-Id': str(b)}
@@ -36,14 +34,14 @@ def test_tables_and_hospital_isolation():
     assert len(client.get('/professionals', headers=HA).json()) == 1
 
 
-def test_hospital_must_exist():
+def test_hospital_must_exist(client):
     # GC-5: an unknown hospital is rejected
     r = client.get('/patients', headers={'X-Hospital-Id': '999'})
     assert r.status_code == 404
     assert r.json() == {'code': 'NOT_FOUND', 'message': 'Hospital não encontrado'}
 
 
-def test_errors_use_standard_format():
+def test_errors_use_standard_format(client):
     # GC-6: every error is {code, message}
     h = client.post('/hospitals', json={'name': 'Hospital C'}).json()['id']
     H = {'X-Hospital-Id': str(h)}
