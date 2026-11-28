@@ -22,7 +22,8 @@ if config.config_file_name is not None:
 from src.infra.sqlalchemy.config.database import Base, SQLALCHEMY_DATABASE_URL
 from src.infra.sqlalchemy.models import models  # noqa: F401  (loads the tables)
 
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
+# Tests can point the migrations to another database through config.attributes
+config.set_main_option("sqlalchemy.url", config.attributes.get("database_url", SQLALCHEMY_DATABASE_URL))
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
