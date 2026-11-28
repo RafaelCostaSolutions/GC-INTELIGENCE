@@ -208,4 +208,12 @@ Open http://127.0.0.1:8000/docs to try it.
 
 ### Tests
 
-    python -m pytest
+    python -m pytest                     # all tests
+    python -m pytest tests/unit          # isolated tests (repositories, tables, migrations)
+    python -m pytest tests/integration   # API tests
+
+Each test runs on its own temporary database, so `gc_dev.db` is never changed.
+
+### Database model
+
+See [docs/database.md](docs/database.md).
